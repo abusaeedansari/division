@@ -1,0 +1,191 @@
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Color Variables */
+:root {
+  --primary-color: #FF6B6B;    
+  --secondary-color: #011f1d;   
+  --accent-color: #FFD93D;     
+  --success-color: #95E1D3;    
+  --warning-color: #FFD93D;    
+  --danger-color: #FF8B8B;     
+  --background-color: #F8F9FA;
+  --card-background: #FFFFFF;
+  --text-color: #2D3436;
+  --shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  --button-shadow: 0 4px 0 #E64C4C;
+}
+
+/* Body Setup */
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Comic Neue', 'Arial', sans-serif;
+  background: linear-gradient(135deg, #4ECDC4, #95E1D3);
+  padding: 20px;
+}
+
+/* Main Container Styles */
+.container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: var(--card-background);
+  padding: 2.5rem;
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  border: 3px solid #FFF;
+  text-align: center;
+}
+
+/* Game Container Specific Styles */
+.game-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.card {
+  width: 100%;
+  max-width: 600px;
+  background-color: var(--card-background);
+  padding: 2.5rem;
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  border: 3px solid #FFF;
+  text-align: center;
+}
+
+/* Typography */
+h1 {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.student-name {
+  font-size: 3.5rem;
+  color: var(--secondary-color);
+  font-weight: 700;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+  margin-bottom: 1.5rem;
+}
+
+.display-text {
+  font-size: 4rem;
+  color: var(--text-color);
+  margin: 1.5rem 0;
+  font-weight: 700;
+  background: #FFF;
+  padding: 1rem;
+  border-radius: 16px;
+  border: 3px solid var(--accent-color);
+}
+
+/* Form Elements */
+select {
+  width: 100%;
+  max-width: 400px;
+  padding: 1rem;
+  margin: 1rem auto;
+  border: 2px solid var(--primary-color);
+  border-radius: 12px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: block;
+}
+
+button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.3rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--button-shadow);
+  margin: 1.5rem auto;
+  display: block;
+  min-width: 200px;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #E64C4C;
+}
+
+button:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #E64C4C;
+}
+
+/* Game States */
+.correct {
+  background-color: var(--success-color) !important;
+}
+
+.warning {
+  background-color: var(--warning-color) !important;
+}
+
+.danger {
+  background-color: var(--danger-color) !important;
+}
+
+/* Timer Bar */
+.timer-bar {
+  width: 100%;
+  max-width: 400px;
+  height: 12px;
+  background: #E8E8E8;
+  border-radius: 20px;
+  margin: 1.5rem auto;
+  overflow: hidden;
+  border: 2px solid var(--accent-color);
+}
+
+.timer-bar-progress {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  transition: width 1s linear;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container, .card {
+    padding: 1.5rem;
+  }
+
+  .student-name {
+    font-size: 2.5rem;
+  }
+
+  .display-text {
+    font-size: 3rem;
+  }
+
+  button {
+    padding: 0.8rem 1.6rem;
+    font-size: 1.1rem;
+  }
+}
+
+/* Labels */
+label {
+  display: block;
+  margin-top: 1rem;
+  color: var(--text-color);
+  font-size: 1.2rem;
+  font-weight: bold;
+}

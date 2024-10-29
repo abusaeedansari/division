@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Division Tables Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+  </head>
+<body>
+  <div class="game-container">
+    <div class="card fade-in">
+      <h1 id="student-name" class="student-name">Division Tables</h1>
+      <p id="display-text" class="display-text">Get Ready!</p>
+      <div class="timer-bar" id="timer-bar"></div>
+      <button id="next-button" onclick="nextStep()" class="next-button">Start</button>
+    </div>
+  </div>
+
+  <script src="students.js"></script>
+  <script>
+    // Parse URL parameters
+    function getQueryParams() {
+      const params = new URLSearchParams(window.location.search);
+      return {
+        grade: params.get("grade"),
+        level: params.get("level"),
+      };
+    }
+
+    // Retrieve selected grade and level from URL
+    const { grade: selectedGrade, level: selectedLevel } = getQueryParams();
+
+    // Validate selected grade and level
+    if (!selectedGrade || !selectedLevel) {
+      alert("Invalid grade or level selection. Please go back and select again.");
+      window.location.href = "index.html";
+    }
+
+    // Retrieve the correct student list based on selected grade
+    const students = studentData[selectedGrade];
+    if (!students) {
+      alert("Student list not found for selected grade.");
+      window.location.href = "index.html";
+    }
+
+    let currentStudent = "";
+    let question = "";
+    let step = 0;
+    let timer;
+    let timeLeft = 3;
+
+    // Array to track remaining students for a round
+    let remainingStudents = [...students];
+
+    // Add this at the top with other global variables
+    let usedQuestions = new Set();
+
+    // Add these functions after your existing global variables and before nextStep()
+    function updateUI(state) {
+        const container = document.querySelector('.card');
+        container.classList.remove('correct', 'warning', 'danger');
+        
+        switch(state) {
+            case 'correct':
+                container.classList.add('correct');
+                break;
+            case 'warning':
+                container.classList.add('warning');
+                break;
+            case 'danger':
+                container.classList.add('danger');
+                break;
+        }
+    }
+
+    function updateButtonText(step) {
+        const button = document.getElementById('next-button');
+        switch(step) {
+            case 0:
+                button.textContent = 'Next Student';
+                break;
+            case 1:
+                button.textContent = 'Show Question';
+                break;
+            case 2:
+                button.textContent = 'Show Answer';
+                break;
+        }
+    }
+
+    // Modify your nextStep() function to use the new UI updates:
+    function nextStep() {
+        if (step === 0) {
+            if (remainingStudents.length === 0) {
+                remainingStudents = [...students];
+                document.getElementById("student-name").innerText = "All students are done!";
+                document.getElementById("display-text").innerText = "Press 'Next' to restart.";
+                updateUI('correct');
+                updateButtonText(0);
+                return;
+            }
+
+            const randomIndex = Math.floor(Math.random() * remainingStudents.length);
+            currentStudent = remainingStudents.splice(randomIndex, 1)[0];
+            document.getElementById("student-name").innerText = currentStudent;
+            document.getElementById("display-text").innerText = "Get Ready!";
+            updateUI('correct');
+            updateButtonText(1);
+            step++;
+        } else if (step === 1) {
+            question = generateProblem();
+            document.getElementById("display-text").innerText = `${question.num1} ÷ ${question.num2}`;
+            timeLeft = 3;
+            updateButtonText(2);
+            startTimer();
+            step++;
+        } else if (step === 2) {
+            clearInterval(timer);
+            document.getElementById("display-text").innerText = `Answer: ${question.answer}`;
+            updateUI('correct');
+            updateButtonText(0);
+            
+            if (remainingStudents.length === 0) {
+                usedQuestions.clear();
+            }
+            
+            step = 0;
+        }
+    }
+
+    // Modify your startTimer() function to use the new UI updates:
+    function startTimer() {
+        updateUI('correct');
+        timer = setInterval(() => {
+            timeLeft--;
+            if (timeLeft === 2) {
+                updateUI('warning');
+            } else if (timeLeft === 1) {
+                updateUI('danger');
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                document.getElementById("display-text").innerText = "Time's up!";
+                updateUI('danger');
+                setTimeout(() => {
+                    nextStep();
+                }, 1000);
+            }
+        }, 1000);
+    }
+
+    // Generate division problems without remainders
+    function generateProblem() {
+        let divisor, dividend, quotient;
+        let maxDivisor;
+        let questionKey;
+        
+        // Set maxDivisor based on difficulty level
+        switch (selectedLevel) {
+            case 'easy':
+                maxDivisor = 5;
+                break;
+            case 'medium':
+                maxDivisor = 10;
+                break;
+            case 'hard':
+                maxDivisor = 12;
+                break;
+            default:
+                maxDivisor = 5;
+        }
+        
+        // Reset usedQuestions if all possible combinations have been used
+        const maxPossibleQuestions = (maxDivisor - 1) * 7; // 7 possible quotients (3-9)
+        if (usedQuestions.size >= maxPossibleQuestions) {
+            usedQuestions.clear();
+        }
+        
+        do {
+            divisor = Math.floor(Math.random() * (maxDivisor - 1)) + 2;
+            quotient = Math.floor(Math.random() * 7) + 3; // 3 to 9
+            dividend = divisor * quotient;
+            questionKey = `${dividend}-${divisor}`; // Create unique key for this question
+        } while (
+            dividend > 144 || 
+            usedQuestions.has(questionKey)
+        );
+        
+        // Add this question to used questions
+        usedQuestions.add(questionKey);
+        
+        return {
+            num1: dividend,
+            num2: divisor,
+            answer: quotient
+        };
+    }
+
+    // Listen for keydown events for presentation pointer control
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "ArrowUp" || event.key === "ArrowDown" || event.key === "PageUp" || event.key === "PageDown" || event.key === " ") {
+        nextStep(); // Trigger nextStep function on arrow, page keys, or space key
+      }
+    });
+  </script>
+</body>
+</html>
